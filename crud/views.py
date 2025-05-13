@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
-from .models import Gender
+from .models import Gender, User
+from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 
 def gender_list(request):
     try:
-        gender = Gender.objects.all()
+        gender = Gender.objects.select_related('gender')
         
         data = {
             'genders':gender
@@ -58,6 +59,17 @@ def edit_gender(request, genderId):
     except Exception as e:
         return HttpResponse(f'Error occurred during edit gender: {e}')
 
+def user_list(request):
+    try:
+        userObj = User.objects.all()
+
+        data = {
+            'user': userObj
+        }
+
+        return render(request, 'user/UserList.html', data)
+    except Exception as e:
+        return HttpResponse(f'Error occurred during user list: {e}')
 
 def delete_gender(request, genderId):
     try:
@@ -78,3 +90,41 @@ def delete_gender(request, genderId):
         return render(request, 'gender/DeleteGender.html', data)
     except Exception as e:
         return HttpResponse(f'Error occurred during delete gender: {e}')
+
+def add_user(request):
+    try:
+        if request.method == 'POST':
+            fullName = request.POST.get('full_name')
+            gender = request.POST.get('gender')
+            birth_date = request.POST.get('birth_date')
+            address = request.POST.get('address')
+            contactNumber = request.POST.get('contact_number')
+            email = request.POST.get('email')
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            confirm_password = request.POST.get('confirm_password')
+
+            
+            User.objects.create(
+                full_name=fullName,
+                gender=Gender.objects.get(pk=gender),
+                birth_date=birth_date,
+                address=address,
+                contact_number=contactNumber,
+                email=email,
+                username=username,
+                password=make_password(password)
+            ).save()
+
+            messages.success(request, 'User added successfully')
+            return redirect('/user/add')
+        else:
+            genderObj = Gender.objects.all()
+
+            data = {
+                'gender': genderObj
+            }
+
+            return render(request, 'user/Adduser.html', data)
+    except Exception as e:
+        return HttpResponse(f'Error occurred during add user: {e}')
