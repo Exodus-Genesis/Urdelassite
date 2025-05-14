@@ -34,7 +34,7 @@ def add_gender(request):
 
         Genders.objects.create(gender=gender).save()
         messages.success(request, 'Gender Added Successfully!')
-        return redirect('/gender/list')
+        return redirect('/gender/list/')
       else:
         return render(request, 'gender/AddGender.html')
     except Exception as e: 
@@ -78,7 +78,7 @@ def delete_gender(request, genderId):
           genderObj.delete()
 
           messages.success(request, 'Gender Deleted Successfully')
-          return redirect('/gender/list')
+          return redirect('/gender/list/')
 
         else:
           genderObj = Genders.objects.get(pk=genderId)
@@ -266,7 +266,7 @@ def edit_user(request, id):
         user_obj.save()
 
         messages.success(request, "User updated successfully!")
-        return redirect('/user/list')
+        return redirect('/user/list/')
 
     else:
         genders = Genders.objects.all()
@@ -282,7 +282,7 @@ def delete_user(request, id):
     if request.method == 'POST':
         user.delete()
         messages.success(request, 'User deleted successfully!')
-        return redirect('/user/list')  # Or use `reverse()`
+        return redirect('/user/list/')  # Or use `reverse()`
 
     # If GET, show confirmation page
     return render(request, 'user/DeleteUser.html', {'user': user})
