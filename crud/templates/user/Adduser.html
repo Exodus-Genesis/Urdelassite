@@ -1,16 +1,15 @@
 {% extends "layout/base.html" %}
 
-{% block 'title' %} Add user {% endblock 'title' %}
+{% block title %}Add User Page{% endblock %}
 
-{% block 'content' %}
-
+{% block content %}
 {% include "include/sidebar.html" %}
 {% include "include/toastmessage.html" %}
 
 <div class="flex pt-16">
 
   <main class="flex-1 p-4 sm:ml-64">
-    <form action="/user/add" method="post">
+    <form action="/user/add/" method="post">
       {% csrf_token %}
       <!-- Start of Grid Layout -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -31,10 +30,10 @@
   <select id="gender" name="gender"
     class="bg-white px-3 py-2.5 border border-gray-300 text-black block text-sm font-medium rounded-sm w-full focus:outline-none focus:ring-blue-600 focus:border-blue-600">
     <option value="">Select Gender</option>
-    {% for gender_item in gender %}
-      <option value="{{ gender_item.gender_id }}" {% if gender_item.gender_id|stringformat:"d" == gender|stringformat:"d" %}selected{% endif %}>
-        {{ gender_item.gender }}
-      </option>
+    {% for gender_item in genders %}
+    <option value="{{ gender_item.gender_id }}" {% if gender_item.gender_id|stringformat:"s" == gender %}selected{% endif %}>
+      {{ gender_item.gender }}
+    </option>
     {% endfor %}
   </select>
   {% if errors.gender %}
@@ -125,11 +124,4 @@
   </main>
 </div>
 
-
-{% endblock 'content' %}
-
-
-
-
-
-
+{% endblock %}
