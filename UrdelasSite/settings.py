@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'UrdelasSite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '127.0.0.1',
+        'HOST': 'localhost',
         'NAME': 'urdelasdj_db',
         'PORT': '3306',
         'USER': 'root',

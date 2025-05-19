@@ -11,6 +11,7 @@ Users List
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <div class="p-2 sm:ml-64 mt-16 md:mt-14">
+        <!-- Search Form -->
         <form method="get" action="{% url 'user_list' %}" id="search-form">
             <input type="text" id="search" name="search" value="{{ search_query }}" placeholder="Search users..." class="mb-4 p-2 rounded border border-gray-300">
             {% if search_query %}
@@ -18,6 +19,7 @@ Users List
             {% endif %}
         </form>
 
+        <!-- User Table -->
         <div id="user-table-container" class="relative overflow-x-auto w-full table-auto rounded-sm shadow-sm">
             <table class="w-full">
                 <thead class="text-xs text-left text-white bg-green-500">
@@ -32,7 +34,6 @@ Users List
                     </tr>
                 </thead>
 
-                <!-- Table Body that will be updated on form submit -->
                 <tbody id="user-table-body" class="text-xs text-black">
                     {% for user in page_obj.object_list %}
                     <tr class="hover:bg-gray-100 border-b border-gray-200">
@@ -61,7 +62,7 @@ Users List
             </table>
 
             <!-- Pagination Controls -->
-            <div class="flex justify-between mt-4">
+            <div class="flex justify-between mt-4" id="pagination-controls">
                 <div class="flex items-center space-x-2">
                     {% if page_obj.has_previous %}
                         <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}"
@@ -95,10 +96,12 @@ Users List
         </div>
     </div>
 
+    <!-- AJAX-based Search Functionality -->
     <script>
         document.getElementById('search').addEventListener('input', function() {
             var searchQuery = this.value;
 
+            // Send AJAX request to update the table and pagination
             fetch("{% url 'user_list' %}?search=" + searchQuery, {
                 method: 'GET',
                 headers: {
@@ -107,7 +110,9 @@ Users List
             })
             .then(response => response.json())
             .then(data => {
+                // Update the table and pagination with the new data
                 document.getElementById('user-table-body').innerHTML = data.html;
+                document.getElementById('pagination-controls').innerHTML = data.pagination_html;
             });
         });
     </script>

@@ -8,12 +8,51 @@ from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-
+from .forms import CreateUserForm
+from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
 
-# @login_required
+def registerPage(request):
+    form = CreateUserForm()
+
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            user = form.cleaned_data.get('username')
+            messages.success(request, 'Account was created for ' + user)
+
+            return redirect('login')
+
+
+    context = {'form': form}
+    return render(request, 'register.html', context)
+
+def loginPage(request):
+
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.info(request, 'Username OR password is incorrect')
+
+    context = {}
+    return render(request, 'login.html', context)
+
+def logoutUser(request):
+    return redirect('login')
+
+@login_required
 def gender_list(request):
    try:
       genders = Genders.objects.all()
@@ -26,7 +65,7 @@ def gender_list(request):
    except Exception as e:
      return HttpResponse(f'Error Occured During Loading Gender List: {e}')
 
-# @login_required
+@login_required
 def add_gender(request):
     try:
       if request.method == 'POST':
@@ -40,7 +79,7 @@ def add_gender(request):
     except Exception as e: 
         return HttpResponse(f'Error Occurred During Add Gender: {e}')  
 
-# @login_required
+@login_required
 def edit_gender(request, genderId):
    try:
       if request.method == 'POST':
@@ -70,7 +109,7 @@ def edit_gender(request, genderId):
    except Exception as e:
       return HttpResponse(f'Error Occurred During Edit Gender: {e}')
 
-# @login_required   
+@login_required   
 def delete_gender(request, genderId):
     try:
         if request.method == 'POST':
@@ -93,7 +132,7 @@ def delete_gender(request, genderId):
 
 from django.http import JsonResponse
 
-# @login_required
+@login_required
 def user_list(request):
     try:
         search_query = request.GET.get('search', '')
@@ -133,7 +172,7 @@ def user_list(request):
     except Exception as e:
         return HttpResponse(f'Error Occurred During Loading User List: {e}')
 
-# @login_required
+@login_required
 def add_user(request):
     if request.method == 'POST':
         # Retrieve data from the form
@@ -208,7 +247,7 @@ def add_user(request):
         genders = Genders.objects.all()
         return render(request, 'user/AddUser.html', {'genders': genders})
 
-# @login_required   
+@login_required   
 def edit_user(request, id):
     user_obj = get_object_or_404(Users, user_id=id)
 
@@ -275,7 +314,7 @@ def edit_user(request, id):
             'genders': genders
         })
 
-# @login_required    
+@login_required    
 def delete_user(request, id):
     user = get_object_or_404(Users, pk=id)
     
